@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/bluetoothDevices"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/send"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/searchD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Devices"
+        android:onClick="BTDiscover"
+        android:layout_below="@id/bluetoothDevices"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/searchPD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="search paired devices"
+        android:onClick="BTPaired"
+        android:layout_below="@id/bluetoothDevices"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Send" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="SendText"
+        android:layout_below="@id/editText"
+        android:text="Send" />
+
+</RelativeLayout>
