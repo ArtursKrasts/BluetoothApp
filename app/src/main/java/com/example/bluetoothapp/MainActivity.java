@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BluetoothDevice BTDevice;
     BTConnection mBTConnection;
 
-    private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
+            final String action = intent.getAction();
             if (action.equals(bluetoothAdapter.ACTION_STATE_CHANGED)) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, bluetoothAdapter.ERROR);
 
@@ -58,14 +58,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         break;
                 }
             }
-        }
-    };
-
-    private final BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
 
             if (action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
 
@@ -92,14 +84,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
 
             }
-        }
-    };
-
-    private BroadcastReceiver mBroadcastReceiver3 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            Log.d(TAG, "onReceive: ACTION FOUND.");
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)){
                 BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
@@ -108,13 +92,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 mBluetoothDevices.setAdapter(mDeviceListAdapter);
             }
-        }
-    };
-
-    private final BroadcastReceiver mBroadcastReceiver4 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
 
             if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)){
                 BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -125,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     //inside BroadcastReceiver4
                     BTDevice = mDevice;
                 }
-                //case2: creating a bone
+                //case2: creating a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
                     Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
                 }
@@ -141,10 +118,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver1);
-        unregisterReceiver(mBroadcastReceiver2);
-        unregisterReceiver(mBroadcastReceiver3);
-        unregisterReceiver(mBroadcastReceiver4);
+        unregisterReceiver(mBroadcastReceiver);
         bluetoothAdapter.cancelDiscovery();
     }
 
@@ -163,10 +137,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             finish();
         }
 
-        enableBT();
-
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        registerReceiver(mBroadcastReceiver4, filter);
+        registerReceiver(mBroadcastReceiver, filter);
+        IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mBroadcastReceiver, BTIntent);
+
+        enableBT();
 
         mBluetoothDevices.setOnItemClickListener(MainActivity.this);
 
@@ -187,9 +163,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Log.d(TAG, "enableBT: enabling BT");
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivity(enableBtIntent);
-
-            IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBroadcastReceiver1, BTIntent);
         }
     }
 
@@ -201,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         startActivity(discoverableIntent);
 
         IntentFilter intentFilter = new IntentFilter(bluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        registerReceiver(mBroadcastReceiver2,intentFilter);
+        registerReceiver(mBroadcastReceiver,intentFilter);
     }
 
     public void BTDiscover(View view) {
@@ -218,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             bluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+            registerReceiver(mBroadcastReceiver, discoverDevicesIntent);
         }
         if(!bluetoothAdapter.isDiscovering()){
 
@@ -229,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             bluetoothAdapter.startDiscovery();
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+            registerReceiver(mBroadcastReceiver, discoverDevicesIntent);
         }
     }
 
